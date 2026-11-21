@@ -1,7 +1,7 @@
 import express from 'express';
 import { requireAdmin } from '../middleware/requireAdmin.js';
 import { toProductDto } from './dto.js';
-import { list, count, getById, createProduct, updateProduct, reserve } from './repository.js';
+import { list, count, getById, findBySku, createProduct, updateProduct, reserve } from './repository.js';
 import { publish } from '../lib/events.js';
 
 const productsRouter = express.Router();
@@ -13,6 +13,17 @@ productsRouter.get('', async (req, res, next) => {
         const category = typeof req.query.category === 'string' ? req.query.category : undefined;
         const [rows, total] = await Promise.all([list({ category, limit }), count({ category })]);
         res.json({ items: rows.map(toProductDto), total });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// GET /products/sku/:sku -> Product
+productsRouter.get('/sku/:sku', async (req, res, next) => {
+    try {
+        const row = await findBySku(req.params.sku);
+        if (!row) return res.status(404).json({ error: 'Product not found' });
+        res.json(toProductDto(row));
     } catch (err) {
         next(err);
     }

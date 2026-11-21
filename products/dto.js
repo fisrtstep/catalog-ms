@@ -6,6 +6,7 @@ export function toProductDto(row) {
         price: row.price_cents / 100,
         currency: row.currency,
         stock: row.stock,
+        inStock: row.stock > 0,
         category: row.category,
     };
 }
