@@ -95,7 +95,7 @@ productsRouter.post('/:id/reserve', async (req, res, next) => {
         const product = await getById(id);
         if (!product) return res.status(404).json({ error: 'Product not found' });
         const updated = await reserve(id, quantity);
-        if (!updated) return res.status(409).json({ error: 'INSUFFICIENT_STOCK', available: product.stock });
+        if (!updated) return res.status(422).json({ error: 'INSUFFICIENT_STOCK', available: product.stock });
         res.json({ id, reserved: quantity, remaining: updated.stock });
     } catch (err) {
         next(err);
